@@ -1,18 +1,59 @@
 // use prisma-8
 
 model User {
-  id            String    @id
+  id            String   @id
   name          String
+  lastName      String
   email         String
-  emailVerified Boolean   @default(false)
-  image         String?
-  createdAt     DateTime  @default(now())
+  emailVerified Boolean  @default(false)
+  createdAt     DateTime @default(now())
   updatedAt     temporal.UpdatedAt
+  roleId        Int
+  role          Role     @relation(fields: [roleId], references: [id])
+  comments      Comment[]
+  requests      Request[]
   sessions      Session[]
   accounts      Account[]
-
+  @@index([roleId])
   @@unique([email])
   @@map("user")
+}
+
+model Role {
+  id          Int @id @default(autoincrement())
+  name        String
+  description String
+  users       User[]
+  @@map("role")
+}
+
+model Request {
+  id            Int   @id @default(autoincrement())
+  title         String
+  description   String
+  priority      String      
+  createdAt     DateTime @default(now())
+  updatedAt     temporal.UpdatedAt
+  status        Boolean
+  responsibleId String
+  responsible   User    @relation(fields: [responsibleId], references: [id])
+  comments      Comment[]
+  @@index([responsibleId])
+  @@map("request")
+
+}
+
+model Comment {
+  id          Int   @id @default(autoincrement())
+  description String
+  createdAt   DateTime @default(now())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  requestId   Int
+  request     Request  @relation(fields: [requestId], references: [id])
+  @@index([userId])
+  @@index([requestId])
+  @@map("comment")  
 }
 
 model Session {
@@ -25,7 +66,6 @@ model Session {
   userAgent String?
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   @@unique([token])
   @@index([userId])
   @@map("session")
@@ -46,7 +86,6 @@ model Account {
   password              String?
   createdAt             DateTime  @default(now())
   updatedAt             temporal.UpdatedAt
-
   @@index([userId])
   @@map("account")
 }
@@ -58,7 +97,6 @@ model Verification {
   expiresAt  DateTime
   createdAt  DateTime @default(now())
   updatedAt  temporal.UpdatedAt
-
   @@index([identifier])
   @@map("verification")
 }

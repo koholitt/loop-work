@@ -1,6 +1,5 @@
 //App to have and admin and put tickets of problems, then the admin assigns a worker for the job and employees can see their tickets ands status
 //admin can create accounts and roles
-//connect prisma8
 //make the model for the databse
 //connect with postgres
 //conect with better auth
